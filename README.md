@@ -1,7 +1,9 @@
 
 ![nRc Coding group logo (3)](https://github.com/yoitsjenna/nRc-Halifax/assets/28242489/b042508f-0104-4765-afbe-80af9c66068b)
 
-**Welcome Women in STEM Symposium!**
+**Welcome to the R Shiny Workshop**
+
+Thanks for joining us using the Shiny package in R 
 
 We are so happy you are tuning in to learn about coding and some of the possibilities that you can apply to your work, school, or daily life. The "nRc coding group" was initiated at NRC Halifax as a cooperative way to bring together coders and those wanting to learn to code. We expanded to the NRC Women in Science and Innovation group by hosting a series of classes, and now, we are very happy to be part of one of the sessions at the Women in STEM Symposium. 
 
