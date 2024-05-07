@@ -1,0 +1,313 @@
+---
+title: "Shiny Introduction"
+author: "Jenna MacKinnon"
+date: '2024-05-07'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# **About Me** 💃
+
+**Email:** jenna.mackinnon\@nrc-cnrc.gc.ca
+
+**Github:** yoitsjenna
+
+-   Graphing & Data Visualization
+
+-   Mapping
+
+-   Data wrangling & tidying
+
+-   Basic statistics
+
+-   Multivariate statistics
+
+-   Beginning to learn Shiny!
+
+# nRc Coding Group Schedule 🗓️
+
+-   Meet from 1-3pm (HFX boardroom) alternating Tuesdays & Thursdays every 2 weeks
+
+    -   Next session: Thursday, May 23rd
+
+-   Today:
+
+    -   1-2pm coding session
+
+    -   2-3pm troubleshooting & freeplay
+
+-   Thursday:
+
+    -   1-2pm coding session
+
+    -   2-3pm troubleshooting & freeplay
+
+# shinyApp Examples ✨
+
+***From the Shiny Posit Gallery***
+
+-   <https://shiny.posit.co/r/gallery/miscellaneous/lego-mosaic/>
+
+-   <https://shiny.posit.co/r/gallery/life-sciences/genome-browser/>
+
+-   <https://shiny.posit.co/r/gallery/life-sciences/covid19-tracker/>
+
+-   <https://shiny.posit.co/r/gallery/sports/soccer-player-similarity/>
+
+-   <https://shiny.posit.co/r/gallery/government-public-sector/scotpho-profiles/>
+
+-   <https://shiny.posit.co/r/gallery/miscellaneous/pokemon-explorer/>
+
+-   <https://shiny.posit.co/r/gallery/start-simple/word-cloud/>
+
+\*A lot of these were examples from previous shinyApp contest participants!
+
+***Other Examples***
+
+-   <https://connect.appsilon.com/shiny-gosling/#!/>
+
+-   <https://statisticsnz.shinyapps.io/livingcostsexplorer/>
+
+-   <http://sectorsdashboard.mbie.govt.nz/>
+
+-   <https://demo.prod.appsilon.ai/bee-colony/>
+
+**What elements were included on the websites?**
+
+-   Text
+
+-   Sliders
+
+-   Maps
+
+-   Graphs
+
+-   Drop-down boxes
+
+-   Radio button selection
+
+-   Check boxes
+
+-   Export as PDF, CSV, PNG, JPEG, etc.
+
+-   "Update" buttons to refresh settings
+
+# Install & Load Packages 🛠️
+
+```{r}
+
+# install.packages("shiny")
+# install.packages("shinythemes")
+# install.packages("bslib")
+# install.packages("maps")
+# install.packages("leaflet")
+# install.packages("tidyverse")
+# install.packages("wordcloud2")
+# install.packages("packrat")
+# install.packages("rsconnect")
+# install.packages("tm")
+# install.packages("wordcloud")
+# install.packages("RColorBrewer")
+
+library(shiny) # base shiny 
+library(shinythemes) # different themes in shiny
+library(bslib) # theme customization 
+library(maps) # contains datasets 
+library(leaflet) # used for creating interactive maps 
+library(tidyverse) # used for customization 
+library(wordcloud2) # used to build word clouds
+library(packrat)
+library(rsconnect)
+library(tm)
+library(wordcloud)
+```
+
+# Intro to Shiny Structure 🌟
+
+<https://www.rstudio.com/products/shiny/>
+
+**Shiny** is a web application framework for R, designed to make it easy to create i**nteractive web applications** directly from R code. With Shiny, you can build web applications without needing to know HTML, CSS, or JavaScript. It allows you to leverage your R programming skills to create dynamic and interactive web applications that can be easily **shared and deployed**.
+
+-   shinyApps can be embedded into other websites
+-   Interactive data exploration
+-   Customization & flexibility
+-   Communication & collaboration
+
+The basic structure of a Shiny application involves two main components:
+
+1.  **UI (User Interface):** This is the front-end part of the application where users interact with the app. In Shiny, the UI is created using R code. You define UI elements like buttons, sliders, text inputs, plots, etc., using functions provided by the **`shiny`** package.
+
+2.  **Server Function:** This is the back-end part of the application where the logic and calculations take place. In Shiny, the server logic is also written in R. The server function takes input from the UI elements, performs any necessary computations, and generates output to be displayed in the UI.
+
+You will combine these two elements to create the shinyApp function!
+
+# Examples with scripts 💻
+
+-   Always make sure that after you run a shinyApp, you "esc" out of the console or press the STOP sign button (top right in the console)
+
+```{r}
+
+runExample("01_hello")
+
+runExample("02_text")
+
+runExample("03_reactivity")
+```
+
+# Beginning with Leaflet 🍃
+
+**`leaflet`** provides a user-friendly interface to generate maps with various layers, markers, polygons, and pop-ups, all of which can be customized extensively.
+
+With **`leaflet`**, you can add multiple layers to your map, including base maps like OpenStreetMap or Stamen, as well as custom data layers such as markers, circles, polygons, and lines. These layers can represent geographical features, locations of interest, or data points with associated attributes.
+
+One of the key features of **`leaflet`** is its interactivity. Users can zoom in and out, pan across the map, and click on markers or shapes to display additional information in pop-up windows. This interactivity makes it easy to explore spatial data and gain insights from the map.
+
+The package also provides a range of options for customizing the appearance and behavior of maps. You can control the style, colors, and symbols used on the map, as well as add legends, scale bars, and other annotations to enhance the map's clarity and readability.
+
+-   Used by NYT, Washington Post, Zillow, Airbnb, Uber, etc.
+-   Also used by our union savings hotel booking service! 😂
+
+```{r}
+
+# This data is available from the 'maps' package and loaded using the data() function 
+
+data(world.cities) 
+
+world.cities
+
+
+# Graph this using 'leaflet' and filter by country and population using dplyr functions. Set the country to "Canada", and only show the records where there are over 100,000 people. 
+# addTiles() and addMarkers() are graphing elements specifically for the 'leaflet' package. 
+
+leaflet(world.cities %>% 
+          dplyr::filter(country.etc == "Canada", pop > 100000)
+        ) %>% 
+        addTiles() %>% 
+        addMarkers(lat = ~lat, lng = ~long)
+
+# Now, let's put this to use as we build a shinyApp. First, we will set the ui and server, then we will combine to create the shinyApp. 
+
+# fluidPage() is a common, basic layout for shiny apps 
+
+ui <- fluidPage(
+        leafletOutput("mymap")
+        )
+
+# Close ui 
+
+
+server <- function(input, output){
+            
+  output$mymap <- renderLeaflet({
+    
+    leaflet(world.cities %>% 
+          dplyr::filter(country.etc == "Canada", pop > 100000)
+        ) %>% 
+        addTiles() %>% 
+        addMarkers(lat = ~lat, lng = ~long)
+  })
+  
+}
+
+# Close server 
+
+# Run the shinyApp!
+shinyApp(ui, server)
+
+
+```
+
+# Combining Leaflet with other shinyApp Elements
+
+```{r}
+
+# Sources: https://github.com/DanielleQuinn
+
+# Load the earthquake data 
+
+data(quakes)
+
+quakes
+
+# Again, let's use the fluidPage() layout to start. 
+
+# Here, we will introduce multiple elements -- dropdown, slider, and plot to go with our leaflet graph. 
+
+ui <- fluidPage(
+
+  htmlOutput(outputId = "Jmac_text"),
+  uiOutput(outputId = "dropdown"),
+  uiOutput(outputId = "slider"),
+  plotOutput(outputId = "Jmac_plot"),
+  leafletOutput(outputId = "Jmac_leaflet")
+
+
+)
+
+# End ui
+
+server <- function(input, output){
+
+# This is the text element
+  output$Jmac_text <- renderText(HTML("<b>hello nRc</b>"))
+  
+# This is the dropdown menu
+  output$dropdown <- renderUI(
+    selectInput(inputId = "Selected_station",
+                label = "Pick a station",
+                choices = sort(unique(quakes$stations))
+                )
+  )
+
+# This reactive function tells the slider to react to whatever is chosen by the dropdown menu 
+  usequakes <- reactive(
+    quakes %>% 
+      dplyr::filter(stations %in% input$Selected_station)
+  ) 
+  
+# This is the slider
+    output$slider <- renderUI(
+      sliderInput(inputId = "Selected_depth",
+                  label = "Pick a minimum depth", 
+                  min = min(usequakes()$depth),
+                  max = max(usequakes()$depth),
+                  value = mean(usequakes()$depth))
+      
+      )
+  
+# This is for the map!!!!!!
+    
+  output$Jmac_leaflet <- renderLeaflet(
+    quakes %>% 
+      dplyr::filter(stations %in% input$Selected_station) %>%
+      leaflet() %>% 
+      addTiles() %>% 
+      addCircleMarkers(label = ~stations)
+    
+  )
+  
+  # This is the plot element 
+  output$Jmac_plot <- renderPlot(
+    quakes %>% 
+      dplyr::filter(stations %in% input$Selected_station, 
+                    depth > input$Selected_depth) %>% 
+      ggplot() +
+      geom_point(aes(x = mag, y = depth))
+  )
+  
+}
+
+# End server 
+
+# Now, run the shinyApp! 
+shinyApp(ui, server)
+
+
+```
+
+# Other Resources 📚
+
+-   <https://mastering-shiny.org/index.html>
