@@ -3,9 +3,9 @@
 
 **Welcome to the R Shiny Workshop**
 
-Thanks for joining us using the Shiny package in R 
+Thanks for joining the Shiny sessions at NRC!
 
-We are so happy you are tuning in to learn about coding and some of the possibilities that you can apply to your work, school, or daily life. The "nRc coding group" was initiated at NRC Halifax as a cooperative way to bring together coders and those wanting to learn to code. We expanded to the NRC Women in Science and Innovation group by hosting a series of classes, and now, we are very happy to be part of one of the sessions at the Women in STEM Symposium. 
+We are so happy you are tuning in to learn about coding and some of the possibilities that you can apply to your work, school, or daily life. The "nRc coding group" was initiated at NRC Halifax as a cooperative way to bring together coders and those wanting to learn to code. We expanded to the NRC Women in Science and Innovation group by hosting a series of classes and participating at the Women in STEM Symposium, and now we are back to learn the power of Shiny together! 
 
 
 **Getting Started in R & R Studio**
