@@ -1,0 +1,233 @@
+---
+title: "Shiny Introduction Part 2"
+author: "Jenna MacKinnon"
+date: '2024-05-09'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Install & Load Packages 🛠️
+
+```{r}
+# install.packages("shiny")
+# install.packages("shinythemes")
+# install.packages("bslib")
+# install.packages("maps")
+# install.packages("leaflet")
+# install.packages("tidyverse")
+# install.packages("wordcloud2")
+# install.packages("packrat")
+# install.packages("rsconnect")
+# install.packages("tm")
+# install.packages("wordcloud")
+# install.packages("RColorBrewer")
+
+library(shiny) # base shiny 
+library(shinythemes) # different themes in shiny
+library(bslib) # theme customization 
+library(maps) # contains datasets 
+library(leaflet) # used for creating interactive maps 
+library(tidyverse) # used for customization 
+library(wordcloud2) # used to build word clouds
+library(packrat)
+library(rsconnect)
+library(tm)
+library(wordcloud)
+```
+
+# Culture Collection shinyApp 🧪
+
+```{r}
+
+# Load the data 
+
+cruise_data <- read.csv("cruisedata.csv", header = TRUE)
+cruise_data
+
+
+ui <- fluidPage(
+
+  htmlOutput(outputId = "Jmac_text"),
+  uiOutput(outputId = "dropdown"),
+  #wordcloud2Output(outputId = "wordcloud"),
+  leafletOutput(outputId = "Jmac_leaflet"),
+  plotOutput(outputId = "Jmac_plot"),
+  uiOutput(outputId = "table"),
+  tags$style(
+    HTML(
+      "
+      /* Set background color */
+      body {
+        background-color: #f0f0f0; /* Use any color code or name */
+      }
+      "
+    )
+  )
+  
+
+)
+
+# End ui
+
+server <- function(input, output){
+
+# This is the text element
+
+  output$Jmac_text <- renderUI({
+    title <- "AGSB Cuture Collection"
+    # CSS style to apply
+    style <- "font-family: 'Open Sans', sans-serif; color: #054D0F; font-size: 48px; font-style: bold;"
+    # Wrap the title text with <span> tag and apply the style
+    span <- tags$span(title, style = style)
+    span
+  })
+
+  
+# This is the dropdown menu so you can select the cruise you want to look at on the map. 
+  output$dropdown <- renderUI(
+    selectInput(inputId = "Selected_Cruise",
+                label = "Choose a Cruise",
+                choices = sort(unique(cruise_data$Cruise))
+                )
+  )
+
+# This is for the cruise map. Notice how the points shows are filted by the cruise that is selected in the dropdown menu! 
+  
+
+   output$Jmac_leaflet <- renderLeaflet(
+      cruise_data %>% 
+      dplyr::filter(cruise_data$Cruise %in% input$Selected_Cruise) %>%
+      leaflet() %>% 
+      addTiles() %>% 
+      addCircleMarkers(label = ~Cruise,color = "#045F20", fillColor = "#12AF41", popup = ~paste(cruise_data$Longitude,",", cruise_data$Latitude))
+    
+  )
+   
+# This is for the table of all the data 
+   output$table <- renderTable(
+     cruise_data
+     
+   )
+
+# This is for the simple bar plot showing the frequency of the difference divisions  
+
+     freq_data <-
+      cruise_data %>%
+      group_by(Division) %>%
+      summarize(count = n())
+
+     
+  
+  # Render the bar graph
+  output$Jmac_plot <- renderPlot({
+    ggplot(freq_data, aes(x = Division, y = count)) +
+      geom_bar(stat = "identity", fill = "#045F20") +
+      labs(x = "Division", y = "Frequency", 
+           title = "Frequency of Each Division")+
+      theme_minimal()
+  }) 
+   
+   
+}
+
+# End server 
+
+# Now, run the shinyApp! 
+shinyApp(ui, server)
+
+```
+
+-   CSS (Cascading Style Sheets) styles define how HTML elements are displayed on a web page. CSS styles specify various visual properties such as color, size, font, spacing, and layout.
+
+# Customization Options 💫
+
+## Fonts 🔤
+
+1.  **Sans-serif fonts**: These fonts are often used for clean and modern designs.
+
+    -   Arial
+
+    -   Helvetica
+
+    -   Calibri
+
+    -   Verdana
+
+    -   Open Sans
+
+2.  **Serif fonts**: These fonts have decorative strokes, known as serifs, at the ends of characters. They are often used for a more traditional and formal look.
+
+    -   Times New Roman
+
+    -   Georgia
+
+    -   Palatino
+
+    -   Baskerville
+
+    -   Garamond
+
+3.  **Monospace fonts**: Each character in these fonts occupies the same amount of horizontal space, which can be useful for displaying code or tabular data.
+
+    -   Courier New
+
+    -   Consolas
+
+    -   Monaco
+
+    -   Liberation Mono
+
+4.  **Google Fonts**: You can also use fonts provided by Google Fonts, which offers a wide selection of free and open-source fonts that you can easily include in your Shiny app. To use Google Fonts, you can include the font in your UI using the **`tags$head()`** function and specify the **`href`** attribute with the URL of the Google Fonts stylesheet
+
+## Leaflet 🍃
+
+1.  **Base Maps**: Leaflet allows you to choose from different base maps such as OpenStreetMap, Mapbox, or Stamen. You can customize the appearance of base maps by adjusting options like tile layers, attribution, and zoom levels.
+
+2.  **Markers**: You can customize markers by changing their icons, colors, sizes, and popup content. This allows you to make markers more visually distinctive and informative.
+
+3.  **Popups**: Popups are displayed when users click on markers or other map features. You can customize popup content, position, appearance, and behavior using various options provided by Leaflet.
+
+4.  **Polygons and Polylines**: Leaflet allows you to draw polygons and polylines on the map. You can customize their appearance by adjusting options like colors, opacity, weight, and fill properties.
+
+5.  **Zoom Control**: Leaflet provides built-in zoom controls that allow users to zoom in and out of the map. You can customize the position, appearance, and behavior of zoom controls using Leaflet's options.
+
+6.  **Layer Control**: If your map contains multiple layers, you can use the layer control to allow users to toggle the visibility of different layers. You can customize the appearance and behavior of the layer control using Leaflet's options.
+
+7.  **Map Controls**: Leaflet provides various map controls such as scale control, fullscreen control, and attribution control. You can customize the appearance and behavior of these controls to meet your specific requirements.
+
+8.  **Map Size and Bounds**: You can customize the size of the map and restrict its bounds to a specific area. This allows you to control the initial view of the map and limit the area that users can explore.
+
+## ggplot2 📊
+
+1.  **`aes()`**: Used to define aesthetic mappings, such as x and y axes, color, shape, size, etc.
+
+2.  **geoms**: These are geometric objects that represent data points, lines, bars, etc. Some commonly used geoms include **`geom_point()`**, **`geom_line()`**, **`geom_bar()`**, **`geom_boxplot()`**, **`geom_histogram()`**.
+
+3.  **Themes**: ggplot2 provides several built-in themes like **`theme_gray()`**, **`theme_bw()`**, **`theme_minimal()`**, etc., which change the appearance of the plot background, grid lines, text, etc.
+
+4.  **Faceting**: Allows you to create multiple plots based on subsets of the data using **`facet_wrap()`** or **`facet_grid()`**.
+
+5.  **Scales**: Control the mapping between data values and aesthetic properties like color, size, shape, etc. Options include **`scale_x_continuous()`**, **`scale_y_discrete()`**, **`scale_color_manual()`**, **`scale_fill_gradient()`** etc.
+
+6.  **Labels and Annotations**: Customize axis labels (**`labs()`**), titles (**`ggtitle()`**), subtitle (**`labs(subtitle=...)`**), caption (**`labs(caption=...)`**), and add text annotations using **`annotate()`**.
+
+7.  **Legends**: Control legend appearance using functions like **`theme()`**.
+
+8.  **Coordinate Systems**: Change the coordinate system with **`coord_cartesian()`**, **`coord_flip()`**, or **`coord_polar()`**.
+
+9.  **Axis Customization**: Modify axis labels, ticks, and breaks using functions like **`scale_*()`**, **`theme()`**, and **`labs()`**.
+
+10. **Plot Size and Resolution**: Adjust the size and resolution of the plot using functions like **`ggsave()`** or **`png()`**, **`pdf()`**.
+
+11. **Color Schemes**: Customize color palettes using built-in functions like **`scale_color_manual()`**, **`scale_fill_manual()`**, or specify custom color palettes.
+
+12. **Transparency**: Control the transparency of elements using the **`alpha`** parameter within **`geom_*()`** functions or **`aes()`**.
+
+# Other Resources 📚
+
+-   <https://posit.co/resources/cheatsheets/>
+
+    -   Here you can find cheatsheets for Shiny, ggplot2, dplyr, etc.
